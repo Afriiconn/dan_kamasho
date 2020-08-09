@@ -3,10 +3,29 @@ import VueRouter from 'vue-router'
 import CustomerDashboard from '../views/CustomerDashboard.vue'
 import TruckerDashboard from '../views/TruckerDashboard.vue'
 //import {auth} from '../firebase'
+import store from '../store/index'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/',
+    name: 'Main',
+    beforeEnter: (to, from, next) => {
+      const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
+      
+      if (requiresAuth && !store.state.isLoggedIn) {
+        next('/login')
+      } else {
+        if (store.state.userType === 'customer') {
+          next('/customer')
+        } else {
+          next('/trucker')
+        }
+      }
+    }
+  }
+  ,
   {
     path: '/login',
     name: 'Login',
@@ -21,7 +40,7 @@ const routes = [
     path: '/customer',
     name: 'Customer Dashboard',
     component: CustomerDashboard,
-    meta:{
+    meta: {
       requiresAuth: true
     }
   },
@@ -29,7 +48,7 @@ const routes = [
     path: '/trucker',
     name: 'Trucker Dashboard',
     component: TruckerDashboard,
-    meta:{
+    meta: {
       requiresAuth: true
     }
   },
@@ -37,15 +56,15 @@ const routes = [
     path: '/trucker-state-order',
     name: 'State Order',
     component: () => import('../views/TruckerStateOrders.vue'),
-    meta:{
+    meta: {
       requiresAuth: true
     }
   },
   {
-    path: '/user-add-order',
+    path: '/customer-add-order',
     name: 'New Order',
-    component: () => import('../views/UserAddOrder.vue'),
-    meta:{
+    component: () => import('../views/CustomerAddOrder.vue'),
+    meta: {
       requiresAuth: true
     }
   }
@@ -57,14 +76,14 @@ const router = new VueRouter({
   routes
 })
 
-/*router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
 
-  if(requiresAuth && !auth.currentUser){
+  if (requiresAuth && !store.state.isLoggedIn) {
     next('/login')
   } else {
     next()
   }
-})*/
+})
 
 export default router

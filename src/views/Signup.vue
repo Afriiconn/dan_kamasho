@@ -1,19 +1,35 @@
 <template>
   <v-container class="mt-12">
+    <v-dialog v-model="sentOTP" persistent max-width="290" id="recaptcha-container">
+      <v-card>
+        <v-card-title>Enter the OTP sent to your phone</v-card-title>
+        <v-card-text>
+          <v-text-field
+            label="OTP Code"
+            v-model="OTPCode"
+            outlined
+            clearable
+            type="text"
+            clear-icon="mdi-close"
+          ></v-text-field>
+          <v-alert type="error" dense v-if="verificationCodeError">Incorrect Verification Code</v-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="error" text @click="sentOTP = !sentOTP">Cancel</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="verifyOTP">Verify</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-row>
       <v-col cols="12" md="6">
         <v-card
           elevation="12"
           class="pa-5"
           :class="{'primary white--text' : isCustomer}"
-          @click="toggleCustomer()"
+          @click="toggleCustomer"
         >
-          <v-img
-            src="../assets/customer.jpg"
-            alt="Customer-Logo"
-            contain
-            max-height="200"
-          ></v-img>
+          <v-img src="../assets/customer.jpg" alt="Customer-Logo" contain max-height="200"></v-img>
           <v-spacer></v-spacer>
           <h5 class="text-h5 text-center">Customer</h5>
         </v-card>
@@ -24,14 +40,9 @@
           elevation="12"
           class="pa-5"
           :class="{'primary white--text' : !isCustomer}"
-          @click="toggleTrucker()"
+          @click="toggleTrucker"
         >
-          <v-img
-            src="../assets/trucker.jpg"
-            alt="Trucker-Logo"
-            contain
-            max-height="200"
-          ></v-img>
+          <v-img src="../assets/trucker.jpg" alt="Trucker-Logo" contain max-height="200"></v-img>
           <v-spacer></v-spacer>
           <h5 class="text-h5 text-center">Trucker</h5>
         </v-card>
@@ -40,38 +51,56 @@
         <v-card rounded class="pa-3" v-show="isCustomer" id="customer-form">
           <v-card-title class="text-center text-h5">Customer Registration</v-card-title>
           <v-card-text>
-            <v-form @submit.prevent>
+            <v-form @submit.prevent ref='custForm'>
               <p>Please fill in your details:</p>
               <v-text-field
                 label="First Name"
                 v-model="customerForm.firstName"
+                :rules="rules.textRules"
                 outlined
                 clearable
                 type="text"
                 clear-icon="mdi-close"
+                required
               ></v-text-field>
               <v-text-field
                 label="Last Name"
                 v-model="customerForm.lastName"
+                :rules="rules.textRules"
                 outlined
                 clearable
                 type="text"
                 clear-icon="mdi-close"
+                required
+              ></v-text-field>
+              <v-text-field
+                label="Phone Number"
+                placeholder="e.g +2348030000000"
+                v-model="customerForm.phone"
+                :rules="rules.phoneRules"
+                outlined
+                clearable
+                type="text"
+                clear-icon="mdi-close"
+                required
               ></v-text-field>
               <v-text-field
                 label="Address"
                 v-model="customerForm.address"
+                :rules="rules.textRules"
                 outlined
                 clearable
                 type="text"
                 clear-icon="mdi-close"
+                required
               ></v-text-field>
             </v-form>
           </v-card-text>
+          <v-alert v-if="isAlreadyRegistered" type="info">Already Registered! Proceed to Login</v-alert>
           <v-card-actions>
-            <v-btn text color="primary" @click="routeToLogin()">Existing user? Log in</v-btn>
+            <v-btn text color="primary" @click="routeToLogin">Existing user? Log in</v-btn>
             <v-spacer></v-spacer>
-            <v-btn dark color="primary" @click="loginUser()" large>Signup</v-btn>
+            <v-btn dark color="primary" @click="signUpCustomer" large>Signup</v-btn>
           </v-card-actions>
         </v-card>
         <v-card rounded class="pa-4" v-show="!isCustomer" id="trucker-form">
@@ -96,6 +125,14 @@
                 clear-icon="mdi-close"
               ></v-text-field>
               <v-text-field
+                label="Phone Number"
+                v-model="truckerForm.phone"
+                outlined
+                clearable
+                type="text"
+                clear-icon="mdi-close"
+              ></v-text-field>
+              <v-text-field
                 label="Address"
                 v-model="truckerForm.address"
                 outlined
@@ -114,9 +151,9 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn text color="primary" @click="routeToLogin()">Existing user? Log in</v-btn>
+            <v-btn text color="primary" @click="routeToLogin">Existing user? Log in</v-btn>
             <v-spacer></v-spacer>
-            <v-btn dark color="primary" @click="loginUser()" large>Signup</v-btn>
+            <v-btn dark color="primary" @click="signUpTrucker" large>Signup</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -125,23 +162,43 @@
 </template>
 <script>
 import router from "../router/index";
+import { mapState } from "vuex";
+import firebase from "firebase/app";
+import 'firebase/auth'
+import * as fb from "../firebase";
 
 export default {
   name: "SignUp",
   data() {
     return {
       isCustomer: true,
+      sentOTP: false,
+      OTPCode: "",
+      verificationCodeError: false,
       customerForm: {
         firstName: "",
         lastName: "",
+        phone: "",
         address: "",
       },
       truckerForm: {
         firstName: "",
         lastName: "",
+        phone: "",
         address: "",
         licenseImageUrl: "",
       },
+      rules:{
+        textRules:[
+          v => !!v || "Required"
+        ],
+        phoneRules:[
+          v => !!v || "Phone number is required",
+          v => (v && v.length == 11) || "Phone number must be 11 characters"
+        ],
+      },
+      appVerifier: undefined,
+      isAlreadyRegistered: false,
     };
   },
   methods: {
@@ -160,6 +217,82 @@ export default {
       console.log(file);
       //this.licenseImageUrl = file.name
     },
+    async signUpCustomer() {
+      if(this.$refs.custForm.validate()){
+        const customer = await fb.customersCollection
+        .doc(this.customerForm.phone)
+        .get();
+
+        if (customer.exists) {
+          this.isAlreadyRegistered = true;
+        } else {
+          this.sendOTP(this.customerForm.phone);
+          this.sentOTP = true;
+        }
+      }
+       
+    },
+    signUpTrucker() {
+      console.log("Trucker");
+    },
+    sendOTP(number) {
+      let appVerifier = this.appVerifier;
+
+      let phoneNum = number;
+
+      firebase
+        .auth()
+        .signInWithPhoneNumber(phoneNum, appVerifier)
+        .then(function (confirmationResult) {
+          window.confirmationResult = confirmationResult;
+          console.log("OTP SMS Sent");
+        })
+        .catch(function (error) {
+          console.log("SMS not sent! Try Again");
+        });
+    },
+    verifyOTP() {
+      let vm = this
+      window.confirmationResult
+        .confirm(this.OTPCode)
+        .then(function (result) {
+          vm.$store.dispatch("signUpCustomer", {
+            firstName: vm.customerForm.firstName,
+            lastName: vm.customerForm.lastName,
+            phoneAccount: vm.customerForm.phone,
+            address: vm.customerForm.address,
+          })
+          vm.sentOTP = false
+        })
+        .catch(function (error) {
+          vm.verificationCodeError = true
+          console.log(error)
+        });
+    },
+    initReCaptcha() {
+      setTimeout(() => {
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+          "recaptcha-container",
+          {
+            size: "invisible",
+            callback: function (response) {
+              // reCAPTCHA solved, allow signInWithPhoneNumber.
+              // ...
+            },
+            "expired-callback": function () {
+              // Response expired. Ask user to solve reCAPTCHA again.
+              // ...
+            },
+          }
+        );
+        //
+        this.appVerifier = window.recaptchaVerifier;
+      }, 1000);
+    },
+  },
+  computed: {},
+  created() {
+    this.initReCaptcha()
   },
 };
 </script>

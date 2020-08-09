@@ -1,6 +1,6 @@
 <template>
-  <v-app-bar color="primary" dark fixed>
-    <v-toolbar-title>Dan Kamasho</v-toolbar-title>
+  <v-app-bar color="white" fixed elevate-on-scroll>
+    <v-toolbar-title style="color: primary">Africon Logistics</v-toolbar-title>
   </v-app-bar>
 </template>
 <script>

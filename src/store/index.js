@@ -2,12 +2,13 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import * as fb from '../firebase'
 import router from '../router/index'
-import { createPersistedState } from 'vuex-persistedstate'
+import createPersistedState from 'vuex-persistedstate'
+import states from './states'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
-  plugins:[
+  plugins: [
     createPersistedState({
       storage: window.sessionStorage
     })
@@ -15,7 +16,8 @@ const store = new Vuex.Store({
   state: {
     userProfile: {},
     userType: '',
-    isLoggedIn: false
+    isLoggedIn: false,
+    states: states,
   },
   mutations: {
     SET_USER_PROFILE(state, payload) {
@@ -24,7 +26,7 @@ const store = new Vuex.Store({
     },
     SET_USER_TYPE(state, payload) {
       state.userType = payload
-    }
+    },
   },
   actions: {
     async login({ commit }, phoneNumber) {
@@ -47,7 +49,11 @@ const store = new Vuex.Store({
 
       router.push('/login')
 
-    }
+    },
+    signUpCustomer({ commit }, customerForm) {
+      fb.customersCollection.doc(customerForm.phoneAccount).set(customerForm)
+      router.push('/login')
+    },
   },
   modules: {
   }

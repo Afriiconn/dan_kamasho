@@ -27,9 +27,9 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn text color="primary" @click="routeToSignup()">New user? Sign up</v-btn>
+        <v-btn text color="primary" @click="routeToSignup">New user? Sign up</v-btn>
         <v-spacer></v-spacer>
-        <v-btn dark color="primary" @click="login()" large>Login</v-btn>
+        <v-btn dark color="primary" @click="login" large>Login</v-btn>
       </v-card-actions>
     </v-flex>
   </v-layout>

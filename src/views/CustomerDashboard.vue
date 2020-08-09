@@ -1,31 +1,19 @@
 <template>
-  <v-container >
-    <v-btn @click="showData()">Show Data</v-btn>
-  </v-container>
-  
+  <div></div>
 </template>
 <script>
-import {mapState} from 'vuex'
+import { mapState } from "vuex";
+import AppBarLogged from '../components/AppBarLogged'
 
 export default {
-  name:'Customer',
-  data(){
-    return{
-
-    }
+  name: "Customer",
+  components:{
+    AppBarLogged
   },
-  methods:{
-    showData(){
-      console.log(this.userProfile)
-      console.log(this.userType)
-    }
+  computed: {
+    ...mapState(["userProfile", "userType"]),
   },
-  computed:{
-    ...mapState(['userProfile','userType'])
-  }
-  
-}
+};
 </script>
 <style lang="scss" scoped>
-
 </style>
