@@ -1,6 +1,6 @@
 <template>
   <v-container class="mt-12">
-    <v-dialog v-model="sentOTP" persistent max-width="290" id="recaptcha-container">
+    <v-dialog v-model="sentOTP" persistent max-width="300" id="recaptcha-container">
       <v-card>
         <v-card-title>Enter the OTP sent to your phone</v-card-title>
         <v-card-text>
@@ -51,7 +51,7 @@
         <v-card rounded class="pa-3" v-show="isCustomer" id="customer-form">
           <v-card-title class="text-center text-h5">Customer Registration</v-card-title>
           <v-card-text>
-            <v-form @submit.prevent ref='custForm'>
+            <v-form @submit.prevent ref="custForm">
               <p>Please fill in your details:</p>
               <v-text-field
                 label="First Name"
@@ -76,7 +76,7 @@
               <v-text-field
                 label="Phone Number"
                 placeholder="e.g +2348030000000"
-                v-model="customerForm.phone"
+                v-model.trim="customerForm.phone"
                 :rules="rules.phoneRules"
                 outlined
                 clearable
@@ -106,11 +106,12 @@
         <v-card rounded class="pa-4" v-show="!isCustomer" id="trucker-form">
           <v-card-title class="text-center text-h5">Trucker Registration</v-card-title>
           <v-card-text>
-            <v-form @submit.prevent>
+            <v-form @submit.prevent ref="truckerForm">
               <p>Please fill in your details:</p>
               <v-text-field
                 label="First Name"
                 v-model="truckerForm.firstName"
+                :rules="rules.textRules"
                 outlined
                 clearable
                 type="text"
@@ -119,6 +120,7 @@
               <v-text-field
                 label="Last Name"
                 v-model="truckerForm.lastName"
+                :rules="rules.textRules"
                 outlined
                 clearable
                 type="text"
@@ -126,7 +128,9 @@
               ></v-text-field>
               <v-text-field
                 label="Phone Number"
-                v-model="truckerForm.phone"
+                v-model.trim="truckerForm.phone"
+                :rules="rules.phoneRules"
+                placeholder="e.g +2348030000000"
                 outlined
                 clearable
                 type="text"
@@ -135,6 +139,7 @@
               <v-text-field
                 label="Address"
                 v-model="truckerForm.address"
+                :rules="rules.textRules"
                 outlined
                 clearable
                 type="text"
@@ -161,10 +166,9 @@
   </v-container>
 </template>
 <script>
-import router from "../router/index";
 import { mapState } from "vuex";
 import firebase from "firebase/app";
-import 'firebase/auth'
+import "firebase/auth";
 import * as fb from "../firebase";
 
 export default {
@@ -188,13 +192,12 @@ export default {
         address: "",
         licenseImageUrl: "",
       },
-      rules:{
-        textRules:[
-          v => !!v || "Required"
-        ],
-        phoneRules:[
-          v => !!v || "Phone number is required",
-          v => (v && v.length == 11) || "Phone number must be 11 characters"
+      licenseImage: null,
+      rules: {
+        textRules: [(v) => !!v || "Required"],
+        phoneRules: [
+          (v) => !!v || "Phone number is required",
+          (v) => (v && v.length == 14) || "Phone number must be 14 characters",
         ],
       },
       appVerifier: undefined,
@@ -203,7 +206,7 @@ export default {
   },
   methods: {
     routeToLogin() {
-      router.push("/login");
+      this.$router.push("/login");
     },
     toggleCustomer() {
       this.isCustomer = true;
@@ -215,13 +218,14 @@ export default {
     },
     addImage(file) {
       console.log(file);
-      //this.licenseImageUrl = file.name
+      this.truckerForm.licenseImageUrl = file.name;
+      this.licenseImage = file;
     },
     async signUpCustomer() {
-      if(this.$refs.custForm.validate()){
+      if (this.$refs.custForm.validate()) {
         const customer = await fb.customersCollection
-        .doc(this.customerForm.phone)
-        .get();
+          .doc(this.customerForm.phone)
+          .get();
 
         if (customer.exists) {
           this.isAlreadyRegistered = true;
@@ -230,10 +234,20 @@ export default {
           this.sentOTP = true;
         }
       }
-       
     },
-    signUpTrucker() {
-      console.log("Trucker");
+    async signUpTrucker() {
+      if (this.$refs.truckerForm.validate()) {
+        const trucker = await fb.truckersCollection
+          .doc(this.truckerForm.phone)
+          .get();
+
+        if (trucker.exists) {
+          this.isAlreadyRegistered = true;
+        } else {
+          this.sendOTP(this.truckerForm.phone);
+          this.sentOTP = true;
+        }
+      }
     },
     sendOTP(number) {
       let appVerifier = this.appVerifier;
@@ -252,21 +266,37 @@ export default {
         });
     },
     verifyOTP() {
-      let vm = this
+      let vm = this;
       window.confirmationResult
         .confirm(this.OTPCode)
         .then(function (result) {
-          vm.$store.dispatch("signUpCustomer", {
-            firstName: vm.customerForm.firstName,
-            lastName: vm.customerForm.lastName,
-            phoneAccount: vm.customerForm.phone,
-            address: vm.customerForm.address,
-          })
-          vm.sentOTP = false
+          if (vm.isCustomer) {
+            vm.$store.dispatch("signUpCustomer", {
+              firstName: vm.customerForm.firstName,
+              lastName: vm.customerForm.lastName,
+              phoneAccount: vm.customerForm.phone,
+              address: vm.customerForm.address,
+            });
+            vm.sentOTP = false;
+          } else {
+            fb.licenseImagesStorage
+              .child(vm.truckerForm.licenseImageUrl)
+              .put(vm.licenseImage)
+              .then((snapshot) => {
+                vm.$store.dispatch("signUpTrucker", {
+                  firstName: vm.truckerForm.firstName,
+                  lastName: vm.truckerForm.lastName,
+                  phoneAccount: vm.truckerForm.phone,
+                  address: vm.truckerForm.address,
+                  licenseImage: vm.truckerForm.licenseImageUrl
+                });
+                vm.sentOTP = false;
+              });
+          }
         })
         .catch(function (error) {
-          vm.verificationCodeError = true
-          console.log(error)
+          vm.verificationCodeError = true;
+          console.log(error.message);
         });
     },
     initReCaptcha() {
@@ -292,7 +322,7 @@ export default {
   },
   computed: {},
   created() {
-    this.initReCaptcha()
+    this.initReCaptcha();
   },
 };
 </script>

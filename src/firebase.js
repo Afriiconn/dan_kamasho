@@ -28,7 +28,7 @@ const truckersCollection = db.collection('trucker')
 
 //images references
 const productImagesStorage = firebase.storage().ref().child('item_pic')
-const licenseImagesStoraghe = firebase.storage().ref().child('licence')
+const licenseImagesStorage = firebase.storage().ref().child('licence')
 
 //export utils/refs
 export {
@@ -38,5 +38,5 @@ export {
   customersCollection,
   truckersCollection,
   productImagesStorage,
-  licenseImagesStoraghe
+  licenseImagesStorage
 }

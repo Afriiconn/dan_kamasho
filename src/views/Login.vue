@@ -13,12 +13,13 @@
       </v-container>
       <v-card-title class="text-h5">Login</v-card-title>
       <v-card-text>
-        <v-form @click.prevent>
+        <v-form @click.prevent ref='signinForm'>
           <p>Enter your phone number:</p>
           <v-text-field
             label="Phone"
             prepend-icon="mdi-phone"
-            v-model="loginForm.phoneNumber"
+            v-model.trim="loginForm.phoneNumber"
+            :rules="phoneRules"
             outlined
             clearable
             type="phone"
@@ -35,35 +36,41 @@
   </v-layout>
 </template>
 <script>
-import router from "../router/index";
+import {mapState} from "vuex"
 
 export default {
   name: "Login",
   data() {
     return {
-      isLoading: false,
       loginForm: {
         phoneNumber: "",
         phoneNumberPrefix: "+234",
       },
+      phoneRules:[
+        v => !!v || "Phone required",
+        v => (v && v.length >= 11) || "Phone number must be 11 characters"
+      ]
     };
   },
   methods: {
     login() {
-      this.isLoading = true;
-      console.log("Logging in....");
-      console.log(
-        `${this.loginForm.phoneNumberPrefix}${this.loginForm.phoneNumber}`
-      );
-      this.$store.dispatch(
+      if(this.$refs.signinForm.validate()){
+        this.$store.dispatch(
         "login",
-        `${this.loginForm.phoneNumberPrefix}${this.loginForm.phoneNumber}`
+        this.formattedphoneNumber
       );
+      }
     },
     routeToSignup() {
-      router.push("/signup");
+      this.$router.push("/signup");
     },
   },
+  computed:{
+    ...mapState(["isLoading"]),
+    formattedphoneNumber(){
+      return this.loginForm.phoneNumberPrefix + this.loginForm.phoneNumber.slice(1,);
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
