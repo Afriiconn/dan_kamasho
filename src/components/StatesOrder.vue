@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <OrderDetails v-if="showOrderDetails" :order="selectedOrder" @close="toggleOrderDetails()"></OrderDetails>
-    <v-card rounded class="mb-2" @click="toggleOrderDetails(customerOrder)">
+    <StateOrderInfo v-if="showOrderDetails" :order="selectedOrder" @close="toggleOrderDetails()"></StateOrderInfo>
+    <v-card rounded class="mb-2" @click="toggleOrderDetails(order)">
       <v-card-text>
         <v-row>
           <v-col>
@@ -10,13 +10,13 @@
                 <v-avatar color="primary">
                   <v-icon dark>mdi-arrow-down</v-icon>
                 </v-avatar>
-                {{customerOrder.departState}}
+                {{order.departState}}
               </h3>
             </div>
             <div>
               <h5>
                 <v-icon>mdi-clock</v-icon>
-                {{customerOrder.timeStamp | formatDate}}
+                {{order.timeStamp | formatDate}}
               </h5>
             </div>
           </v-col>
@@ -26,7 +26,7 @@
                 <v-avatar color="primary">
                   <v-icon dark>mdi-arrow-up</v-icon>
                 </v-avatar>
-                {{customerOrder.destState}}
+                {{order.destState}}
               </h3>
             </div>
             <div>
@@ -41,11 +41,11 @@
   </v-container>
 </template>
 <script>
-import OrderDetails from "@/components/OrderDetails";
+import StateOrderInfo from "@/components/StateOrderInfo";
 
 export default {
-  name: "StateToState",
-  props: ["customerOrder"],
+  name: "StatesOrder",
+  props: ["order"],
   data() {
     return {
       showOrderDetails: false,
@@ -53,7 +53,7 @@ export default {
     };
   },
   components: {
-    OrderDetails,
+    StateOrderInfo,
   },
   methods: {
     toggleOrderDetails(order) {

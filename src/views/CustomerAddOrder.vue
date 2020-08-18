@@ -1,5 +1,5 @@
 <template>
-  <v-container class="mt-12">
+  <v-container class="mt-12 mx-5">
     <v-snackbar v-model="saved" top>Order successfully saved!</v-snackbar>
     <v-snackbar v-model="error" top multi-line>Oops! Something went wrong. Try again.</v-snackbar>
     <v-layout v-if="isLoading" justify-center align-center>
@@ -119,6 +119,7 @@
 import { mapState } from "vuex";
 import * as fb from "../firebase";
 import firebase from 'firebase/app'
+import OrderDetailsVue from '../components/OrderDetails.vue';
 
 export default {
   name: "CustomerAddOrder",
@@ -147,7 +148,7 @@ export default {
   methods: {
     async addImage(file) {
       this.imageData = file;
-      this.form.itemImage = file.name;
+      this.form.itemImage = Date.now().toString();
       const storageRef = await fb.productImagesStorage
         .child(this.form.itemImage)
         .put(this.imageData);
@@ -168,12 +169,13 @@ export default {
         destState: this.form.destState,
         itemDesc: this.form.itemDesc,
         itemImage: this.form.itemImage,
-        price: this.form.price,
-        quantity: this.form.quantity,
+        price: parseFloat(this.form.price),
+        quantity: parseFloat(this.form.quantity),
         timeStamp: firebase.firestore.Timestamp.fromDate(new Date()),
       };
 
-      orderDocument.customerOrders[userPhone] = this.userProfile;
+      orderDocument.customerOrders[userPhone] = {};
+      orderDocument.customerOrders[userPhone]['customer'] = this.userProfile
 
       fb.ordersCollection
         .doc(this.form.itemImage)

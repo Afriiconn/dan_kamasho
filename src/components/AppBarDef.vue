@@ -1,6 +1,8 @@
 <template>
   <v-app-bar color="white" fixed elevate-on-scroll>
-    <v-toolbar-title style="color: primary">Africon Logistics</v-toolbar-title>
+    <v-btn text>
+      <v-img src="../assets/africon_logo.png" width="120" height="40"></v-img>
+    </v-btn>
   </v-app-bar>
 </template>
 <script>

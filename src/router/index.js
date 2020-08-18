@@ -53,7 +53,7 @@ const routes = [
     }
   },
   {
-    path: '/trucker-state-order',
+    path: '/trucker-state-order/:state',
     name: 'State Order',
     component: () => import('../views/TruckerStateOrders.vue'),
     meta: {

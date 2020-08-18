@@ -1,7 +1,8 @@
 <template>
   <v-app>
     <AppBarDef v-if="!isLoggedIn"></AppBarDef>
-    <AppBarLogged v-if="showCustomerNav"></AppBarLogged>
+    <AppBarCustomer v-if="showCustomerNav"></AppBarCustomer>
+    <AppBarTrucker v-if="showTruckerNav"></AppBarTrucker>
     <transition>
       <router-view></router-view>
     </transition>
@@ -10,14 +11,16 @@
 
 <script>
 import AppBarDef from "@/components/AppBarDef";
-import AppBarLogged from "@/components/AppBarLogged";
+import AppBarCustomer from "@/components/AppBarCustomer";
+import AppBarTrucker from "@/components/AppBarTrucker";
 import { mapState } from "vuex";
 
 export default {
   name: "App",
   components: {
     AppBarDef,
-    AppBarLogged,
+    AppBarCustomer,
+    AppBarTrucker
   },
   data: () => ({}),
   computed: {
@@ -25,6 +28,9 @@ export default {
     showCustomerNav() {
       return this.isLoggedIn && this.userType === "customer";
     },
+    showTruckerNav() {
+      return this.isLoggedIn && this.userType === "trucker";
+    }
   },
 };
 </script>

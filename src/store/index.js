@@ -19,7 +19,9 @@ const store = new Vuex.Store({
     isLoggedIn: false,
     states: states,
     isLoading: false,
-    customersOrders: []
+    customersOrders: [],
+    truckersAcceptedOrders: [],
+    stateOrders: []
   },
   mutations: {
     SET_USER_PROFILE(state, payload) {
@@ -36,6 +38,12 @@ const store = new Vuex.Store({
     },
     SET_CUSTOMERS_ORDERS(state, payload) {
       state.customersOrders = payload
+    },
+    SET_TRUCKERS_ACCEPTED_ORDERS(state, payload) {
+      state.truckersAcceptedOrders = payload
+    },
+    SET_STATE_ORDERS(state, payload) {
+      state.stateOrders = payload
     }
   },
   actions: {
@@ -66,6 +74,7 @@ const store = new Vuex.Store({
     },
     logout({ commit }) {
       commit('SET_USER_PROFILE', {})
+      commit('SET_CUSTOMERS_ORDERS', [])
       commit('SET_USER_TYPE', '')
       commit('SET_LOGGED_IN', false)
       router.push('/login')
@@ -80,14 +89,36 @@ const store = new Vuex.Store({
     },
     async getCustomersOrders({ commit }) {
       const ordersArray = []
-      const orders = await fb.ordersCollection.get()
+      const orders = await fb.ordersCollection.orderBy("timeStamp", "desc").get()
       orders.forEach(order => {
-        if(this.state.userProfile.phoneAccount in order.data().customerOrders){
+        if (this.state.userProfile.phoneAccount in order.data().customerOrders) {
           ordersArray.push(order.data())
           console.log(order.data())
         }
       })
       commit('SET_CUSTOMERS_ORDERS', ordersArray)
+    },
+    async getTruckersAcceptedOrders({ commit }) {
+      const ordersArray = []
+      const orders = await fb.ordersCollection.get()
+      orders.forEach(order => {
+        if (this.state.userProfile.phoneAccount in order.data().acceptOrders) {
+          ordersArray.push(order.data())
+          console.log(order.data())
+        }
+      })
+      commit('SET_TRUCKERS_ACCEPTED_ORDERS', ordersArray)
+    },
+    async getStateOrders({ commit }, state) {
+      const ordersArray = []
+      const orders = await fb.ordersCollection.get()
+      orders.forEach(order => {
+        if (state == order.data().departState) {
+          ordersArray.push(order.data())
+          console.log(order.data())
+        }
+      })
+      commit('SET_STATE_ORDERS', ordersArray)
     }
   },
   modules: {

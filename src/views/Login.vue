@@ -9,9 +9,9 @@
     </v-flex>
     <v-flex v-else xs12 sm8 md4>
       <v-container class="mx-auto pa-5">
-        <v-img src="../assets/logo.jpg" alt="Logo-Image" contain></v-img>
+        <v-img src="../assets/africon_large.png" alt="Logo-Image" contain></v-img>
       </v-container>
-      <v-card-title class="text-h5">Login</v-card-title>
+      <v-card-title class="text-h5 text-center">Login</v-card-title>
       <v-card-text>
         <v-form @click.prevent ref='signinForm'>
           <p>Enter your phone number:</p>
