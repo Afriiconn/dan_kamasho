@@ -8,7 +8,7 @@
             <div>
               <h3>
                 <v-avatar color="primary">
-                  <v-icon dark>mdi-arrow-down</v-icon>
+                  <v-icon dark>mdi-arrow-up</v-icon>
                 </v-avatar>
                 {{order.departState}}
               </h3>
@@ -24,7 +24,7 @@
             <div>
               <h3>
                 <v-avatar color="primary">
-                  <v-icon dark>mdi-arrow-up</v-icon>
+                  <v-icon dark>mdi-arrow-down</v-icon>
                 </v-avatar>
                 {{order.destState}}
               </h3>

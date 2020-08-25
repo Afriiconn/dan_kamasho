@@ -85,6 +85,16 @@
                 required
               ></v-text-field>
               <v-text-field
+                label="Password"
+                v-model.trim="customerForm.password"
+                :rules="rules.passwordRules"
+                outlined
+                clearable
+                type="password"
+                clear-icon="mdi-close"
+                required
+              ></v-text-field>
+              <v-text-field
                 label="Address"
                 v-model="customerForm.address"
                 :rules="rules.textRules"
@@ -137,6 +147,15 @@
                 clear-icon="mdi-close"
               ></v-text-field>
               <v-text-field
+                label="Password"
+                v-model.trim="truckerForm.password"
+                :rules="rules.passwordRules"
+                outlined
+                clearable
+                type="password"
+                clear-icon="mdi-close"
+              ></v-text-field>
+              <v-text-field
                 label="Address"
                 v-model="truckerForm.address"
                 :rules="rules.textRules"
@@ -183,12 +202,14 @@ export default {
         firstName: "",
         lastName: "",
         phone: "",
+        password:"",
         address: "",
       },
       truckerForm: {
         firstName: "",
         lastName: "",
         phone: "",
+        password:"",
         address: "",
         licenseImageUrl: "",
       },
@@ -199,6 +220,10 @@ export default {
           (v) => !!v || "Phone number is required",
           (v) => (v && v.length == 14) || "Phone number must be 14 characters",
         ],
+        passwordRules:[
+          (v) => !!v || "Password is required",
+          (v) => (v && v.length >= 8) || "Password must be atleast 8 characters"
+        ]
       },
       appVerifier: undefined,
       isAlreadyRegistered: false,
@@ -218,7 +243,7 @@ export default {
     },
     addImage(file) {
       console.log(file);
-      this.truckerForm.licenseImageUrl = file.name;
+      this.truckerForm.licenseImageUrl = Date.now().toString();
       this.licenseImage = file;
     },
     async signUpCustomer() {
@@ -275,6 +300,7 @@ export default {
               firstName: vm.customerForm.firstName,
               lastName: vm.customerForm.lastName,
               phoneAccount: vm.customerForm.phone,
+              password: vm.customerForm.password,
               address: vm.customerForm.address,
             });
             vm.sentOTP = false;
@@ -287,6 +313,7 @@ export default {
                   firstName: vm.truckerForm.firstName,
                   lastName: vm.truckerForm.lastName,
                   phoneAccount: vm.truckerForm.phone,
+                  password: vm.truckerForm.password,
                   address: vm.truckerForm.address,
                   licenseImage: vm.truckerForm.licenseImageUrl
                 });

@@ -8,13 +8,13 @@
       </v-container>
     </v-flex>
     <v-flex v-else xs12 sm8 md4>
+      <v-snackbar bottom v-model="incorrectLogin">Incorrect Phone/Password</v-snackbar>
       <v-container class="mx-auto pa-5">
         <v-img src="../assets/africon_large.png" alt="Logo-Image" contain></v-img>
       </v-container>
       <v-card-title class="text-h5 text-center">Login</v-card-title>
       <v-card-text>
         <v-form @click.prevent ref='signinForm'>
-          <p>Enter your phone number:</p>
           <v-text-field
             label="Phone"
             prepend-icon="mdi-phone"
@@ -23,6 +23,16 @@
             outlined
             clearable
             type="phone"
+            clear-icon="mdi-close"
+          ></v-text-field>
+          <v-text-field
+            label="Password"
+            prepend-icon="mdi-lock"
+            v-model.trim="loginForm.password"
+            :rules="passwordRules"
+            outlined
+            clearable
+            type="password"
             clear-icon="mdi-close"
           ></v-text-field>
         </v-form>
@@ -44,11 +54,15 @@ export default {
     return {
       loginForm: {
         phoneNumber: "",
+        password:"",
         phoneNumberPrefix: "+234",
       },
       phoneRules:[
         v => !!v || "Phone required",
         v => (v && v.length >= 11) || "Phone number must be 11 characters"
+      ],
+      passwordRules:[
+        (v) => !!v || "Password required"
       ]
     };
   },
@@ -57,7 +71,8 @@ export default {
       if(this.$refs.signinForm.validate()){
         this.$store.dispatch(
         "login",
-        this.formattedphoneNumber
+        {phoneNumber:this.formattedphoneNumber,
+        password:this.loginForm.password}
       );
       }
     },
@@ -66,11 +81,11 @@ export default {
     },
   },
   computed:{
-    ...mapState(["isLoading"]),
+    ...mapState(["isLoading","incorrectLogin"]),
     formattedphoneNumber(){
       return this.loginForm.phoneNumberPrefix + this.loginForm.phoneNumber.slice(1,);
     }
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>

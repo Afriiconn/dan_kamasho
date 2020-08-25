@@ -17,6 +17,7 @@ const store = new Vuex.Store({
     userProfile: {},
     userType: '',
     isLoggedIn: false,
+    incorrectLogin: false,
     states: states,
     isLoading: false,
     customersOrders: [],
@@ -44,16 +45,20 @@ const store = new Vuex.Store({
     },
     SET_STATE_ORDERS(state, payload) {
       state.stateOrders = payload
+    },
+    INCORRECT_LOGIN(state,payload){
+      state.incorrectLogin = payload
     }
   },
   actions: {
-    async login({ commit }, phoneNumber) {
+    async login({ commit }, loginForm) {
       commit('SET_LOADING', true)
+      commit('INCORRECT_LOGIN',false)
 
-      const customer = await fb.customersCollection.doc(phoneNumber).get()
-      const trucker = await fb.truckersCollection.doc(phoneNumber).get()
+      const customer = await fb.customersCollection.doc(loginForm.phoneNumber).get()
+      const trucker = await fb.truckersCollection.doc(loginForm.phoneNumber).get()
 
-      if (customer.exists) {
+      if (customer.exists && customer.data().password === loginForm.password) {
         commit('SET_USER_PROFILE', customer.data())
         commit('SET_USER_TYPE', 'customer')
         commit('SET_LOGGED_IN', true)
@@ -62,7 +67,7 @@ const store = new Vuex.Store({
         return
       }
 
-      if (trucker.exists) {
+      if (trucker.exists && trucker.data().password === loginForm.password) {
         commit('SET_USER_PROFILE', trucker.data())
         commit('SET_USER_TYPE', 'trucker')
         commit('SET_LOGGED_IN', true)
@@ -70,6 +75,7 @@ const store = new Vuex.Store({
         router.replace('/trucker')
         return
       }
+      commit('INCORRECT_LOGIN',true)
       commit('SET_LOADING', false)
     },
     logout({ commit }) {
