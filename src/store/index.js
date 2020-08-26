@@ -99,7 +99,6 @@ const store = new Vuex.Store({
       orders.forEach(order => {
         if (this.state.userProfile.phoneAccount in order.data().customerOrders) {
           ordersArray.push(order.data())
-          console.log(order.data())
         }
       })
       commit('SET_CUSTOMERS_ORDERS', ordersArray)
@@ -110,7 +109,6 @@ const store = new Vuex.Store({
       orders.forEach(order => {
         if (this.state.userProfile.phoneAccount in order.data().acceptOrders) {
           ordersArray.push(order.data())
-          console.log(order.data())
         }
       })
       commit('SET_TRUCKERS_ACCEPTED_ORDERS', ordersArray)
@@ -121,7 +119,6 @@ const store = new Vuex.Store({
       orders.forEach(order => {
         if (state == order.data().departState) {
           ordersArray.push(order.data())
-          console.log(order.data())
         }
       })
       commit('SET_STATE_ORDERS', ordersArray)

@@ -26,9 +26,7 @@ export default {
     return {};
   },
   methods: {
-    displayStateOrders() {
-      console.log(this.stateOrders);
-    },
+   
   },
   computed: {
     ...mapState(["stateOrders"]),

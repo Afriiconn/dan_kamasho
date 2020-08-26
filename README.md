@@ -1,4 +1,9 @@
-# dan_kamasho
+# Dan Kamasho
+The official repository of the Afriiconn web application.
+
+
+## Description
+Afriiconn is a Nigerian logistics company that aims to revolutionise and overhaul the Nigerian logistics sector by using modern and cutting-edge technologies to improve user experience, user satisfaction and efficiency.
 
 ## Project setup
 ```

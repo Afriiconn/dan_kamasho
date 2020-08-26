@@ -28,9 +28,6 @@ export default {
     StateToState,
   },
   methods: {
-    logCustomersOrders() {
-      console.log(this.customersOrders);
-    },
   },
   computed: {
     ...mapState(["customersOrders"]),

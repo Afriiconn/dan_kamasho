@@ -284,10 +284,10 @@ export default {
         .signInWithPhoneNumber(phoneNum, appVerifier)
         .then(function (confirmationResult) {
           window.confirmationResult = confirmationResult;
-          console.log("OTP SMS Sent");
+          alert("OTP SMS Sent");
         })
         .catch(function (error) {
-          console.log("SMS not sent! Try Again");
+          alert("SMS not sent! Try Again");
         });
     },
     verifyOTP() {
