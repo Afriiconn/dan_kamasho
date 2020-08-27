@@ -132,7 +132,6 @@ export default {
         })
         .catch(function (error) {
           vm.verificationCodeError = true;
-          console.log(error.message);
         });
     },
     saveNewPassword() {

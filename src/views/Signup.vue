@@ -244,7 +244,6 @@ export default {
       this.$vuetify.goTo("#trucker-form");
     },
     addImage(file) {
-      console.log(file);
       this.truckerForm.licenseImageUrl = Date.now().toString();
       this.licenseImage = file;
     },
