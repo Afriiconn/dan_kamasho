@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import CustomerDashboard from '../views/CustomerDashboard.vue'
 import TruckerDashboard from '../views/TruckerDashboard.vue'
+import NotFound from '../views/NotFound.vue'
 //import {auth} from '../firebase'
 import store from '../store/index'
 
@@ -13,7 +14,7 @@ const routes = [
     name: 'Main',
     beforeEnter: (to, from, next) => {
       const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
-      
+
       if (requiresAuth && !store.state.isLoggedIn) {
         next('/login')
       } else {
@@ -26,6 +27,11 @@ const routes = [
     }
   }
   ,
+  {
+    path: '*',
+    name: 'Not Found',
+    component: NotFound
+  },
   {
     path: '/login',
     name: 'Login',
