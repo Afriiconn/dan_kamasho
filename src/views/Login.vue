@@ -14,7 +14,7 @@
       </v-container>
       <v-card-title class="text-h5 text-center">Login</v-card-title>
       <v-card-text>
-        <v-form @click.prevent ref='signinForm'>
+        <v-form @click.prevent ref="signinForm">
           <v-text-field
             label="Phone"
             prepend-icon="mdi-phone"
@@ -35,6 +35,10 @@
             type="password"
             clear-icon="mdi-close"
           ></v-text-field>
+          <v-row>
+            <v-spacer></v-spacer>
+            <v-btn text color="primary text-right" @click="routeToReset">Forgot Password?</v-btn>
+          </v-row>
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -46,7 +50,7 @@
   </v-layout>
 </template>
 <script>
-import {mapState} from "vuex"
+import { mapState } from "vuex";
 
 export default {
   name: "Login",
@@ -54,37 +58,39 @@ export default {
     return {
       loginForm: {
         phoneNumber: "",
-        password:"",
+        password: "",
         phoneNumberPrefix: "+234",
       },
-      phoneRules:[
-        v => !!v || "Phone required",
-        v => (v && v.length >= 11) || "Phone number must be 11 characters"
+      phoneRules: [
+        (v) => !!v || "Phone required",
+        (v) => (v && v.length >= 11) || "Phone number must be 11 characters",
       ],
-      passwordRules:[
-        (v) => !!v || "Password required"
-      ]
+      passwordRules: [(v) => !!v || "Password required"],
     };
   },
   methods: {
     login() {
-      if(this.$refs.signinForm.validate()){
-        this.$store.dispatch(
-        "login",
-        {phoneNumber:this.formattedphoneNumber,
-        password:this.loginForm.password}
-      );
+      if (this.$refs.signinForm.validate()) {
+        this.$store.dispatch("login", {
+          phoneNumber: this.formattedphoneNumber,
+          password: this.loginForm.password,
+        });
       }
     },
     routeToSignup() {
       this.$router.push("/signup");
     },
+    routeToReset() {
+      this.$router.push("/reset-password");
+    },
   },
-  computed:{
-    ...mapState(["isLoading","incorrectLogin"]),
-    formattedphoneNumber(){
-      return this.loginForm.phoneNumberPrefix + this.loginForm.phoneNumber.slice(1,);
-    }
+  computed: {
+    ...mapState(["isLoading", "incorrectLogin"]),
+    formattedphoneNumber() {
+      return (
+        this.loginForm.phoneNumberPrefix + this.loginForm.phoneNumber.slice(1)
+      );
+    },
   },
 };
 </script>

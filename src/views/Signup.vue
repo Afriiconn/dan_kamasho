@@ -75,7 +75,7 @@
               ></v-text-field>
               <v-text-field
                 label="Phone Number"
-                placeholder="e.g +2348030000000"
+                placeholder="e.g 08030000000"
                 v-model.trim="customerForm.phone"
                 :rules="rules.phoneRules"
                 outlined
@@ -110,7 +110,7 @@
           <v-card-actions>
             <v-btn text color="primary" @click="routeToLogin">Existing user? Log in</v-btn>
             <v-spacer></v-spacer>
-            <v-btn dark color="primary" @click="signUpCustomer" large>Signup</v-btn>
+            <v-btn dark color="primary" id="sign-up-customer" @click="signUpCustomer" large>Signup</v-btn>
           </v-card-actions>
         </v-card>
         <v-card rounded class="pa-4" v-show="!isCustomer" id="trucker-form">
@@ -140,7 +140,7 @@
                 label="Phone Number"
                 v-model.trim="truckerForm.phone"
                 :rules="rules.phoneRules"
-                placeholder="e.g +2348030000000"
+                placeholder="e.g 08030000000"
                 outlined
                 clearable
                 type="text"
@@ -177,7 +177,7 @@
           <v-card-actions>
             <v-btn text color="primary" @click="routeToLogin">Existing user? Log in</v-btn>
             <v-spacer></v-spacer>
-            <v-btn dark color="primary" @click="signUpTrucker" large>Signup</v-btn>
+            <v-btn dark color="primary" id="sign-up-trucker" @click="signUpTrucker" large>Signup</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -197,6 +197,7 @@ export default {
       isCustomer: true,
       sentOTP: false,
       OTPCode: "",
+      phoneNumberPrefix: "+234",
       verificationCodeError: false,
       customerForm: {
         firstName: "",
@@ -218,14 +219,15 @@ export default {
         textRules: [(v) => !!v || "Required"],
         phoneRules: [
           (v) => !!v || "Phone number is required",
-          (v) => (v && v.length == 14) || "Phone number must be 14 characters",
+          (v) => (v && v.length == 11) || "Phone number must be 11 characters",
         ],
         passwordRules:[
           (v) => !!v || "Password is required",
-          (v) => (v && v.length >= 8) || "Password must be atleast 8 characters"
+          (v) => (v && v.length >= 6) || "Password must be atleast 6 characters"
         ]
       },
-      appVerifier: undefined,
+      custAppVerifier: undefined,
+      truckerAppVerifier: undefined,
       isAlreadyRegistered: false,
     };
   },
@@ -255,7 +257,7 @@ export default {
         if (customer.exists) {
           this.isAlreadyRegistered = true;
         } else {
-          this.sendOTP(this.customerForm.phone);
+          this.sendCustOTP(this.formattedCustomerPhoneNumber);
           this.sentOTP = true;
         }
       }
@@ -269,13 +271,29 @@ export default {
         if (trucker.exists) {
           this.isAlreadyRegistered = true;
         } else {
-          this.sendOTP(this.truckerForm.phone);
+          this.sendTruckerOTP(this.formattedTruckerPhoneNumber);
           this.sentOTP = true;
         }
       }
     },
-    sendOTP(number) {
-      let appVerifier = this.appVerifier;
+    sendCustOTP(number) {
+      let appVerifier = this.custAppVerifier;
+
+      let phoneNum = number;
+
+      firebase
+        .auth()
+        .signInWithPhoneNumber(phoneNum, appVerifier)
+        .then(function (confirmationResult) {
+          window.confirmationResult = confirmationResult;
+          alert("OTP SMS Sent");
+        })
+        .catch(function (error) {
+          alert("SMS not sent! Try Again");
+        });
+    },
+    sendTruckerOTP(number) {
+      let appVerifier = this.truckerAppVerifier;
 
       let phoneNum = number;
 
@@ -299,7 +317,7 @@ export default {
             vm.$store.dispatch("signUpCustomer", {
               firstName: vm.customerForm.firstName,
               lastName: vm.customerForm.lastName,
-              phoneAccount: vm.customerForm.phone,
+              phoneAccount: vm.formattedCustomerPhoneNumber,
               password: vm.customerForm.password,
               address: vm.customerForm.address,
             });
@@ -312,7 +330,7 @@ export default {
                 vm.$store.dispatch("signUpTrucker", {
                   firstName: vm.truckerForm.firstName,
                   lastName: vm.truckerForm.lastName,
-                  phoneAccount: vm.truckerForm.phone,
+                  phoneAccount: vm.formattedTruckerPhoneNumber,
                   password: vm.truckerForm.password,
                   address: vm.truckerForm.address,
                   licenseImage: vm.truckerForm.licenseImageUrl
@@ -326,10 +344,11 @@ export default {
           console.log(error.message);
         });
     },
-    initReCaptcha() {
+    initCustReCaptcha() {
+      //Use invisible recaptcha from firebase documentation
       setTimeout(() => {
         window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-          "recaptcha-container",
+          "sign-up-customer",
           {
             size: "invisible",
             callback: function (response) {
@@ -343,13 +362,42 @@ export default {
           }
         );
         //
-        this.appVerifier = window.recaptchaVerifier;
+        this.custAppVerifier = window.recaptchaVerifier;
+      }, 1000);
+    },
+    initTruckerReCaptcha() {
+      //Use invisible recaptcha from firebase documentation
+      setTimeout(() => {
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+          "sign-up-trucker",
+          {
+            size: "invisible",
+            callback: function (response) {
+              // reCAPTCHA solved, allow signInWithPhoneNumber.
+              // ...
+            },
+            "expired-callback": function () {
+              // Response expired. Ask user to solve reCAPTCHA again.
+              // ...
+            },
+          }
+        );
+        //
+        this.truckerAppVerifier = window.recaptchaVerifier;
       }, 1000);
     },
   },
-  computed: {},
+  computed: {
+    formattedCustomerPhoneNumber(){
+      return this.phoneNumberPrefix + this.customerForm.phone.slice(1,);
+    },
+    formattedTruckerPhoneNumber(){
+      return this.phoneNumberPrefix + this.truckerForm.phone.slice(1,);
+    }
+  },
   created() {
-    this.initReCaptcha();
+    this.initCustReCaptcha();
+    this.initTruckerReCaptcha();
   },
 };
 </script>
