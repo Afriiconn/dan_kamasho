@@ -203,14 +203,14 @@ export default {
         firstName: "",
         lastName: "",
         phone: "",
-        password:"",
+        password: "",
         address: "",
       },
       truckerForm: {
         firstName: "",
         lastName: "",
         phone: "",
-        password:"",
+        password: "",
         address: "",
         licenseImageUrl: "",
       },
@@ -221,10 +221,11 @@ export default {
           (v) => !!v || "Phone number is required",
           (v) => (v && v.length == 11) || "Phone number must be 11 characters",
         ],
-        passwordRules:[
+        passwordRules: [
           (v) => !!v || "Password is required",
-          (v) => (v && v.length >= 6) || "Password must be atleast 6 characters"
-        ]
+          (v) =>
+            (v && v.length >= 6) || "Password must be atleast 6 characters",
+        ],
       },
       custAppVerifier: undefined,
       truckerAppVerifier: undefined,
@@ -332,7 +333,7 @@ export default {
                   phoneAccount: vm.formattedTruckerPhoneNumber,
                   password: vm.truckerForm.password,
                   address: vm.truckerForm.address,
-                  licenseImage: vm.truckerForm.licenseImageUrl
+                  licenseImage: vm.truckerForm.licenseImageUrl,
                 });
                 vm.sentOTP = false;
               });
@@ -344,57 +345,59 @@ export default {
         });
     },
     initCustReCaptcha() {
+      let vm = this;
       //Use invisible recaptcha from firebase documentation
-      setTimeout(() => {
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-          "sign-up-customer",
-          {
-            size: "invisible",
-            callback: function (response) {
-              // reCAPTCHA solved, allow signInWithPhoneNumber.
-              // ...
-            },
-            "expired-callback": function () {
-              // Response expired. Ask user to solve reCAPTCHA again.
-              // ...
-            },
-          }
-        );
-        //
-        this.custAppVerifier = window.recaptchaVerifier;
-      }, 1000);
+
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+        "sign-up-customer",
+        {
+          size: "invisible",
+          callback: function (response) {
+            // reCAPTCHA solved, allow signInWithPhoneNumber.
+            // ...
+            vm.signUpCustomer();
+          },
+          "expired-callback": function () {
+            // Response expired. Ask user to solve reCAPTCHA again.
+            // ...
+          },
+        }
+      );
+      //
+      this.custAppVerifier = window.recaptchaVerifier;
     },
     initTruckerReCaptcha() {
+      let vm = this;
       //Use invisible recaptcha from firebase documentation
-      setTimeout(() => {
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-          "sign-up-trucker",
-          {
-            size: "invisible",
-            callback: function (response) {
-              // reCAPTCHA solved, allow signInWithPhoneNumber.
-              // ...
-            },
-            "expired-callback": function () {
-              // Response expired. Ask user to solve reCAPTCHA again.
-              // ...
-            },
-          }
-        );
-        //
-        this.truckerAppVerifier = window.recaptchaVerifier;
-      }, 1000);
+
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+        "sign-up-trucker",
+        {
+          size: "invisible",
+          callback: function (response) {
+            // reCAPTCHA solved, allow signInWithPhoneNumber.
+            // ...
+            vm.signUpTrucker();
+          },
+          "expired-callback": function () {
+            // Response expired. Ask user to solve reCAPTCHA again.
+            // ...
+          },
+        }
+      );
+      //
+      this.truckerAppVerifier = window.recaptchaVerifier;
     },
   },
   computed: {
-    formattedCustomerPhoneNumber(){
-      return this.phoneNumberPrefix + this.customerForm.phone.slice(1,);
+    formattedCustomerPhoneNumber() {
+      return this.phoneNumberPrefix + this.customerForm.phone.slice(1);
     },
-    formattedTruckerPhoneNumber(){
-      return this.phoneNumberPrefix + this.truckerForm.phone.slice(1,);
-    }
+    formattedTruckerPhoneNumber() {
+      return this.phoneNumberPrefix + this.truckerForm.phone.slice(1);
+    },
   },
-  created() {
+  mounted() {
     this.initCustReCaptcha();
     this.initTruckerReCaptcha();
   },
