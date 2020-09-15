@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Home from '../views/Home.vue'
 import CustomerDashboard from '../views/CustomerDashboard.vue'
 import TruckerDashboard from '../views/TruckerDashboard.vue'
 import NotFound from '../views/NotFound.vue'
@@ -12,19 +13,7 @@ const routes = [
   {
     path: '/',
     name: 'Main',
-    beforeEnter: (to, from, next) => {
-      const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
-
-      if (requiresAuth && !store.state.isLoggedIn) {
-        next('/login')
-      } else {
-        if (store.state.userType === 'customer') {
-          next('/customer')
-        } else {
-          next('/trucker')
-        }
-      }
-    }
+    component: Home
   }
   ,
   {

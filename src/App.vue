@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import AppBar from "@/components/AppBar"
 import AppBarDef from "@/components/AppBarDef";
 import AppBarCustomer from "@/components/AppBarCustomer";
 import AppBarTrucker from "@/components/AppBarTrucker";

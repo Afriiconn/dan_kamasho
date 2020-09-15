@@ -1,8 +1,24 @@
 <template>
-  <v-app-bar color="white" fixed elevate-on-scroll>
-    <v-btn text>
+  <v-app-bar color="transparent" fixed elevate-on-scroll>
+    <router-link to="/">
       <v-img src="../assets/africon_logo.png" width="120" height="40"></v-img>
-    </v-btn>
+    </router-link>
+    <v-spacer></v-spacer>
+    <router-link to="/#home" class="d-none d-sm-flex text-decoration-none">
+      <v-btn text color="white">
+        <span>Home</span>
+      </v-btn>
+    </router-link>
+    <router-link to="/#services" class="d-none d-sm-flex text-decoration-none">
+      <v-btn text color="white">
+        <span>Services</span>
+      </v-btn>
+    </router-link>
+    <router-link to="/login" class="d-none d-sm-flex">
+      <v-btn dark color="primary">
+        <span>Get Started</span>
+      </v-btn>
+    </router-link>
   </v-app-bar>
 </template>
 <script>
