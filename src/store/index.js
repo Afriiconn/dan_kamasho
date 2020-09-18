@@ -20,6 +20,7 @@ const store = new Vuex.Store({
     incorrectLogin: false,
     states: states,
     isLoading: false,
+    homeOrders:[], //orders to appear on home page
     customersOrders: [],
     truckersAcceptedOrders: [],
     stateOrders: []
@@ -36,6 +37,9 @@ const store = new Vuex.Store({
     },
     SET_LOADING(state, payload) {
       state.isLoading = payload
+    },
+    SET_HOME_ORDERS(state,payload){
+      state.homeOrders = payload
     },
     SET_CUSTOMERS_ORDERS(state, payload) {
       state.customersOrders = payload
@@ -92,6 +96,14 @@ const store = new Vuex.Store({
     signUpTrucker(context, truckerForm) {
       fb.truckersCollection.doc(truckerForm.phoneAccount).set(truckerForm)
       router.push('/login')
+    },
+    async getOrders({ commit }) {
+      let ordersArray = []
+      const orders = await fb.ordersCollection.orderBy("timeStamp", "desc").limit(4).get()
+      orders.forEach(order =>{
+        ordersArray.push(order.data())
+      })
+      commit('SET_HOME_ORDERS', ordersArray)
     },
     async getCustomersOrders({ commit }) {
       const ordersArray = []
