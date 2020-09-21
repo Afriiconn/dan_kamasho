@@ -40,7 +40,7 @@
         <h3 class="primary--text text-h4 text-center font-weight-bold pb-5">Benefits</h3>
         <v-divider></v-divider>
         <v-row>
-          <v-col cols="12" md="3" class="text-center">
+          <v-col cols="12" md="4" class="text-center">
             <p>
               <v-icon color="primary" size="48">mdi-gesture-tap</v-icon>
             </p>
@@ -48,15 +48,15 @@
             <p>Our strategic and seamless system makes delivery easier and simpler</p>
           </v-col>
           <v-spacer></v-spacer>
-          <v-col cols="12" md="3" class="text-center">
+          <v-col cols="12" md="4" class="text-center">
             <p>
               <v-icon color="primary" size="48">mdi-hand-okay</v-icon>
             </p>
             <p class="font-weight-medium">Best Prices</p>
-            <p>Get the best affordable prices for your goods being transported from several excellent transporters</p>
+            <p>Get the best affordable prices for your goods being transported by several excellent transporters</p>
           </v-col>
           <v-spacer></v-spacer>
-          <v-col cols="12" md="3" class="text-center">
+          <v-col cols="12" md="4" class="text-center">
             <p>
               <v-icon color="primary" size="48">mdi-cash-multiple</v-icon>
             </p>
@@ -64,12 +64,20 @@
             <p>More money in your pockets. Bid and win by giving the best rate. Keep your trucks busy</p>
           </v-col>
           <v-spacer></v-spacer>
-          <v-col cols="12" md="3" class="text-center">
+          <v-col cols="12" md="4" class="text-center">
             <p>
               <v-icon color="primary" size="48">mdi-radar</v-icon>
             </p>
             <p class="font-weight-medium">Real Time Tracking</p>
             <p>Track your goods via GIS. Know where the truck and hence, your goods are</p>
+          </v-col>
+          
+          <v-col cols="12" md="4" class="text-center">
+            <p>
+              <v-icon color="primary" size="48">mdi-thumb-up</v-icon>
+            </p>
+            <p class="font-weight-medium">Good In Transit Insurance</p>
+            <p>Therefore, your goods are safe with us</p>
           </v-col>
         </v-row>
         <h3 class="primary--text text-h4 text-center font-weight-bold py-5">How It Works</h3>
@@ -79,7 +87,7 @@
             <p>
               <v-icon color="primary" size="32">mdi-numeric-1-circle</v-icon>
             </p>
-            <p>Truckers - register your trucks and earn a living in ease and comfort</p>
+            <p>Truckers - register your trucks and earn a living with ease and comfort</p>
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="12" md="3" class="text-center">
@@ -93,7 +101,7 @@
             <p>
               <v-icon color="primary" size="32">mdi-numeric-3-circle</v-icon>
             </p>
-            <p>Get a transporter in no time to get your goods to your desired destination in no time</p>
+            <p>Get a transporter to move your goods to your desired location in no time</p>
           </v-col>
         </v-row>
         <v-row>
