@@ -71,7 +71,7 @@
             <p class="font-weight-medium">Real Time Tracking</p>
             <p>Track your goods via GIS. Know where the truck and hence, your goods are</p>
           </v-col>
-          
+
           <v-col cols="12" md="4" class="text-center">
             <p>
               <v-icon color="primary" size="48">mdi-thumb-up</v-icon>
@@ -128,7 +128,7 @@
         </v-row>
         <h3 class="primary--text text-h4 text-center font-weight-bold py-5">Available Orders</h3>
         <v-divider></v-divider>
-        <v-row v-for="(state,i) in homeOrders" :key="i" @click="toLogin" style="cursor:pointer">
+        <v-row v-for="(state,i) in homeOrders" :key="i" @click="toLogin" style="cursor:pointer" class="order">
           <v-col>
             <p>{{state.departState}}</p>
           </v-col>
@@ -141,8 +141,10 @@
             <p class="text-right">{{state.destState}}</p>
           </v-col>
         </v-row>
-        <p class="text-center my-6">
-          <v-btn outlined color="primary">Get Started</v-btn>
+        <p class="text-center my-6 ">
+          <router-link to="/login">
+            <v-btn outlined color="primary" class="last-button">Get Started</v-btn>
+          </router-link>
         </p>
         <v-divider></v-divider>
       </v-container>
@@ -163,6 +165,7 @@
           <p>Contact Address:</p>
           <p>81 Sen Isa Kachako Street, Farm Centre,</p>
           <p>Kano, Kano State</p>
+          <p>+234-902-897-9534</p>
           <p>
             <a href="mailto:afriicon@gmail.com">afriicon@gmail.com</a>
           </p>
@@ -212,9 +215,22 @@ export default {
   background-size: cover;
 }
 
+.order, .last-button{
+  transition: ease 1s
+}
+.order:hover{
+  transform: scaleX(1.1) scaleY(1.2)
+}
+
+.last-button:hover{
+  transform: scale(1.2)
+}
 main {
   p {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+  a{
+    text-decoration: none;
   }
 }
 
