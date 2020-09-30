@@ -156,7 +156,13 @@
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="12" md="3" class="text-center">
-          <a :href="instagram_link">
+          <a :href="facebook_link" target="_blank">
+            <v-icon>mdi-facebook</v-icon>
+          </a>
+          <a :href="twitter_link" target="_blank">
+            <v-icon>mdi-twitter</v-icon>
+          </a>
+          <a :href="instagram_link" target="_blank">
             <v-icon>mdi-instagram</v-icon>
           </a>
         </v-col>
@@ -177,11 +183,15 @@
 </template>
 <script>
 import { mapState } from "vuex";
+
 document.title = "Afriiconn - Africa's No. 1 Logistics Company";
+
 export default {
   name: "Home",
   data() {
     return {
+      facebook_link: "https://facebook.com/afriiconn",
+      twitter_link: "https://twitter.com/afriiconn",
       instagram_link: "https://instagram.com/afriiconnlogistics",
     };
   },
