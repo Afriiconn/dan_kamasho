@@ -99,7 +99,7 @@ const store = new Vuex.Store({
     },
     async getOrders({ commit }) {
       let ordersArray = []
-      const orders = await fb.ordersCollection.orderBy("timeStamp", "desc").limit(4).get()
+      const orders = await fb.ordersCollection.orderBy("timeStamp", "desc").limit(10).get()
       orders.forEach(order =>{
         ordersArray.push(order.data())
       })

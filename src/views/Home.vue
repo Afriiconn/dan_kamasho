@@ -128,20 +128,10 @@
         </v-row>
         <h3 class="primary--text text-h4 text-center font-weight-bold py-5">Available Orders</h3>
         <v-divider></v-divider>
-        <v-row v-for="(state,i) in homeOrders" :key="i" @click="toLogin" style="cursor:pointer" class="order">
-          <v-col>
-            <p>{{state.departState}}</p>
-          </v-col>
-          <v-col>
-            <p class="text-center">
-              <v-icon color="primary">mdi-arrow-right</v-icon>
-            </p>
-          </v-col>
-          <v-col>
-            <p class="text-right">{{state.destState}}</p>
-          </v-col>
-        </v-row>
-        <p class="text-center my-6 ">
+        <v-for v-for="(state,i) in localOrders" :key="i+index">
+          <HomeStateOrder @click="toLogin" :state="state" style="cursor:pointer" />
+        </v-for>
+        <p class="text-center my-6">
           <router-link to="/login">
             <v-btn outlined color="primary" class="last-button">Get Started</v-btn>
           </router-link>
@@ -182,14 +172,19 @@
   </div>
 </template>
 <script>
+import HomeStateOrder from "@/components/HomeStateOrder";
 import { mapState } from "vuex";
 
 document.title = "Afriiconn - Africa's No. 1 Logistics Company";
 
 export default {
   name: "Home",
+  components: {
+    HomeStateOrder,
+  },
   data() {
     return {
+      index: 0,
       facebook_link: "https://facebook.com/afriiconn",
       twitter_link: "https://twitter.com/afriiconn",
       instagram_link: "https://instagram.com/afriiconnlogistics",
@@ -209,9 +204,21 @@ export default {
   },
   computed: {
     ...mapState(["homeOrders"]),
+    localOrders() {
+      return this.homeOrders.slice(0, 5);
+    },
   },
   created() {
     this.$store.dispatch("getOrders");
+  },
+  mounted() {
+    setInterval(() => {
+      this.localOrders.shift();
+      this.localOrders.push(this.homeOrders[this.index]);
+      this.index >= this.homeOrders.length
+        ? (this.index = 0)
+        : (this.index += 1);
+    }, 2000);
   },
 };
 </script>
@@ -225,21 +232,19 @@ export default {
   background-size: cover;
 }
 
-.order, .last-button{
-  transition: ease 1s
-}
-.order:hover{
-  transform: scaleX(1.1) scaleY(1.2)
+.last-button {
+  transition: ease 1s;
 }
 
-.last-button:hover{
-  transform: scale(1.2)
+.last-button:hover {
+  transform: scale(1.2);
 }
+
 main {
   p {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   }
-  a{
+  a {
     text-decoration: none;
   }
 }
