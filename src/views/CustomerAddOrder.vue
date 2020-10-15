@@ -66,7 +66,7 @@
             outlined
             show-size
             counter
-            label="Item Image"
+            label="Image of Goods"
             @change="addImage"
           ></v-file-input>
           <p class="mt-2">Tonnes</p>
