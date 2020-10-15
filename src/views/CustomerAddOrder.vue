@@ -167,7 +167,7 @@ export default {
         destAddress: this.form.destAddress,
         destState: this.form.destState,
         itemDesc: this.form.itemDesc,
-        itemImage: this.form.itemImage,
+        itemImage: this.form.itemImage || '',
         price: parseFloat(this.form.price),
         quantity: parseFloat(this.form.quantity),
         timeStamp: firebase.firestore.Timestamp.fromDate(new Date()),
@@ -176,8 +176,12 @@ export default {
       orderDocument.customerOrders[userPhone] = {};
       orderDocument.customerOrders[userPhone]['customer'] = this.userProfile
 
+      let docRef;
+
+      this.form.itemImage === '' ? docRef = Date.now().toString() : docRef = this.form.itemImage;
+
       fb.ordersCollection
-        .doc(this.form.itemImage)
+        .doc(docRef)
         .set(orderDocument)
         .then((_) => {
           this.saved = true;
