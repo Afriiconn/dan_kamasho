@@ -63,11 +63,10 @@
           <p class="mt-2">Image</p>
           <v-img v-if="pictureRef != ''" :src="pictureRef" width="200" height="200" contain></v-img>
           <v-file-input
-            :rules="rules.textRules"
             outlined
             show-size
             counter
-            label="Driving License Image"
+            label="Item Image"
             @change="addImage"
           ></v-file-input>
           <p class="mt-2">Tonnes</p>
