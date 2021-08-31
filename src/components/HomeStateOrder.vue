@@ -11,6 +11,9 @@
     <v-col>
       <p class="text-right">{{state.destState}}</p>
     </v-col>
+    <v-col>
+      <p class="text-right">&#x20A6;{{state.price}}</p>
+    </v-col>
   </v-row>
 </template>
 <script>
